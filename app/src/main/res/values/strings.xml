@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">MalabarMoviesApp</string>
+    <string name="now_playing">Now Playing</string>
+    <string name="popular">Popular</string>
+    <string name="top_rated">Top Rated</string>
+    <string name="upcoming">Upcoming</string>
+    <string name="movie_details">Details</string>
+    <string name="production_companies">Production companies</string>
+    <string name="cast">Cast</string>
+    <string name="recommended">Recommended</string>
+    <string name="similar">Similar</string>
+    <string name="movie_images">Movie Images</string>
+    <string name="movie_video">Video</string>
+    <string name="search">Search</string>
+    <string name="trending_movies">Trending Movies</string>
+    <string name="trending_tv_shows">Trending Tv Shows</string>
+    <string name="trending_tv_people">Trending People</string>
+</resources>

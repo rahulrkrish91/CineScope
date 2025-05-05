@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home">Home</string>
+    <string name="tv">TV</string>
+    <string name="profile">Profile</string>
+    <string name="airing_today">Airing Today</string>
+    <string name="on_the_air">On Air</string>
+    <string name="details">Details</string>
+    <string name="images">Images</string>
+    <string name="reviews">Reviews</string>
+    <string name="no_reviews">No reviews</string>
+    <string name="video">Video</string>
+    <string name="login">Login</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="or">Or Sign In with</string>
+    <string name="search">Search</string>
+    <string name="default_web_client_id">625793187063</string>
+    <string name="search_result">Search Result</string>
+</resources>
