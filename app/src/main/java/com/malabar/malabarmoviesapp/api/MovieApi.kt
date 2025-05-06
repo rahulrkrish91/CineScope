@@ -14,6 +14,7 @@ import com.malabar.malabarmoviesapp.domain.data.search.trending.TrendingPersonRe
 import com.malabar.malabarmoviesapp.domain.data.tv.airing_today.AiringTodayResponse
 import com.malabar.malabarmoviesapp.domain.data.tv.details.TvShowDetailsResponse
 import com.malabar.malabarmoviesapp.domain.data.tv.episode.EpisodeDetails
+import com.malabar.malabarmoviesapp.domain.data.tv.search.TvSearchResponse
 import com.malabar.malabarmoviesapp.domain.data.tv.season.TvSeasonDetailsResponse
 import com.malabar.malabarmoviesapp.domain.data.video.MovieVideoResponse
 import retrofit2.http.GET
@@ -178,4 +179,9 @@ interface MovieApi {
         @Path("season_number") seasonNumber: Int,
         @Path("episode_number") episodeNumber: Int
     ): MovieVideoResponse
+
+    @GET("search/tv")
+    suspend fun retrieveTvSearchResult(
+        @Query("query") query: String
+    ): TvSearchResponse
 }

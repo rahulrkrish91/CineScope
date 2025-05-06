@@ -55,7 +55,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-
     api(libs.androidx.lifecycle.runtime.ktx)
     api(libs.androidx.lifecycle.viewmodel.compose)
     api(libs.androidx.lifecycle.livedata.ktx)
@@ -102,4 +101,6 @@ dependencies {
     api(libs.firebase.analytics)
 
     api(libs.app.update)
+
+    api(libs.google.ads)
 }

@@ -31,16 +31,18 @@ fun HomeScreenMovieItems(
 
         LazyRow {
             items(items) { movie ->
-                MovieItemScreen(
-                    image = "$MOVIE_IMAGE_W_500${movie.poster_path}",
-                    title = movie.title,
-                    onClick = {
-                        navController.navigate(
-                            Screens.Details.createRoute(movie.id)
-                        )
-                    },
-                    height = 200.dp
-                )
+                movie.title?.let {
+                    MovieItemScreen(
+                        image = "$MOVIE_IMAGE_W_500${movie.poster_path}",
+                        title = it,
+                        onClick = {
+                            navController.navigate(
+                                Screens.Details.createRoute(movie.id)
+                            )
+                        },
+                        height = 200.dp
+                    )
+                }
             }
         }
     }

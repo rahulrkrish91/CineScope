@@ -11,6 +11,9 @@ class AppConstants {
         const val MOVIE_DEFAULT_LANG = "en-US"
         const val MOVIE_DEFAULT_REGION = "in"
 
+        const val GOOGLE_AD = "ca-app-pub-1657553758550660~2089927936"
+        const val GOOGLE_PUB_SUB = "ca-app-pub-1657553758550660/5520254091"
+
         fun getVideThumbnail(key: String) = "https://img.youtube.com/vi/$key/mqdefault.jpg"
     }
 }

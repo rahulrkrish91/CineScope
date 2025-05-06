@@ -35,6 +35,7 @@ import com.malabar.malabarmoviesapp.domain.interactors.tv.GetTvEpisodeDetailsUse
 import com.malabar.malabarmoviesapp.domain.interactors.tv.GetTvEpisodeVideoUseCase
 import com.malabar.malabarmoviesapp.domain.interactors.tv.GetTvOnTheAirUseCase
 import com.malabar.malabarmoviesapp.domain.interactors.tv.GetTvRecommendationsUseCase
+import com.malabar.malabarmoviesapp.domain.interactors.tv.GetTvSearchResultUseCase
 import com.malabar.malabarmoviesapp.domain.interactors.tv.GetTvSeasonDetailsUseCase
 import com.malabar.malabarmoviesapp.domain.interactors.tv.GetTvSeasonVideoUseCase
 import com.malabar.malabarmoviesapp.domain.interactors.tv.GetTvSeriesDetailsUseCase
@@ -57,6 +58,7 @@ import com.malabar.malabarmoviesapp.domain.repository.tv.TvCreditsRepository
 import com.malabar.malabarmoviesapp.domain.repository.tv.TvEpisodeDetailsRepository
 import com.malabar.malabarmoviesapp.domain.repository.tv.TvOnTheAirRepository
 import com.malabar.malabarmoviesapp.domain.repository.tv.TvPopularRepository
+import com.malabar.malabarmoviesapp.domain.repository.tv.TvSearchRepository
 import com.malabar.malabarmoviesapp.domain.repository.tv.TvSeasonDetailsRepository
 import com.malabar.malabarmoviesapp.domain.repository.tv.TvSeriesDetailsRepository
 import com.malabar.malabarmoviesapp.domain.repository.tv.TvSeriesVideoRepository
@@ -174,6 +176,7 @@ val repositoryModule = module {
     singleOf(::TvTrendingRepository)
     singleOf(::TvRecommendationsRepository)
     singleOf(::TvSeriesVideoRepository)
+    singleOf(::TvSearchRepository)
 }
 
 val interactorModule = module {
@@ -208,6 +211,7 @@ val interactorModule = module {
     factoryOf(::GetTvSeriesVideoUseCase)
     factoryOf(::GetTvSeasonVideoUseCase)
     factoryOf(::GetTvEpisodeVideoUseCase)
+    factoryOf(::GetTvSearchResultUseCase)
 
     factory<InAppUpdateManager> { (activity: Activity) ->
         InAppUpdateManagerImpl(activity)

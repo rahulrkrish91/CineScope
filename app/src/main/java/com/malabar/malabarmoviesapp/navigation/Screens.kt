@@ -29,6 +29,12 @@ sealed class Screens(val route: String) {
         fun createRoute(query: String) = "search_result/$query"
     }
 
+    object SearchTv : Screens("searchTv")
+
+    object SearchTvResult : Screens("searchTvResult/{query}") {
+        fun createTvSearchRoute(query: String) = "searchTvResult/$query"
+    }
+
     object MovieReview : Screens("movieReviews/{movieId}") {
         fun createMovieReviewRoute(movieId: Int) = "movieReviews/$movieId"
     }
@@ -50,7 +56,7 @@ sealed class Screens(val route: String) {
             "episode/$seriesId/$seasonNumber/$episodeNumber"
     }
 
-    object TvSeasonVideo: Screens("tvVideo/{id}"){
+    object TvSeasonVideo : Screens("tvVideo/{id}") {
         fun createTvVideo(id: Int) = "tvVideo/$id"
     }
 }

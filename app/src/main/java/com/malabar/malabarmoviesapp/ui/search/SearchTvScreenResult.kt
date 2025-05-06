@@ -17,34 +17,35 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImage
 import com.malabar.core.R
-import com.malabar.core.data.MovieItem
 import com.malabar.core.failure.Failure
 import com.malabar.core.ui.CommonToolbarBackNav
 import com.malabar.malabarmoviesapp.navigation.Screens
-import com.malabar.malabarmoviesapp.ui.MovieSearchState
-import com.malabar.malabarmoviesapp.ui.MovieSearchViewModel
+import com.malabar.malabarmoviesapp.ui.tv.TvSearchState
+import com.malabar.malabarmoviesapp.ui.tv.TvViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun SearchResultList(
+fun SearchTvScreenResult(
     query: String?,
-    navController: NavController,
-    movieSearchViewModel: MovieSearchViewModel = koinViewModel(),
+    navController: NavHostController,
+    tvViewModel: TvViewModel = koinViewModel()
 ) {
 
-    val searchState = movieSearchViewModel.movieSearchState.collectAsStateWithLifecycle()
+    val searchState = tvViewModel.mutableTvSearchState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     LaunchedEffect(Unit) {
         if (query != null)
-            movieSearchViewModel.retrieveMovieSearch(query)
+            tvViewModel.retrieveTvSearch(query)
 
-        movieSearchViewModel.failure.collect { failure ->
+        tvViewModel.failure.collect { failure ->
             when (failure) {
                 Failure.InternalError -> {
                     Toast.makeText(context, "Internal Error", Toast.LENGTH_SHORT).show()
@@ -74,13 +75,41 @@ fun SearchResultList(
         )
         when (val state = searchState.value) {
 
-            MovieSearchState.Loading -> {
+            TvSearchState.Loading -> {
 
             }
-            is MovieSearchState.Success -> {
+
+            is TvSearchState.Success -> {
                 LazyColumn {
-                    items(state.result.results) { result ->
-                        SearchResultScreen(result, navController)
+                    items(state.data.results) { result ->
+                        OutlinedCard(
+                            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 5.dp),
+                            onClick = {
+                                navController.navigate(
+                                    Screens.TvDetails.createTvDetailsRoute(result.id)
+                                )
+                            }
+                        ) {
+                            Column {
+                                AsyncImage(
+                                    model = result.createBackdropImage(),
+                                    contentDescription = "Movie Image",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.height(200.dp),
+                                    error = painterResource(R.drawable.no_image),
+                                    placeholder = painterResource(R.drawable.loading)
+                                )
+                                result.name?.let {
+                                    Text(
+                                        text = it,
+                                        modifier = Modifier
+                                            .padding(5.dp)
+                                            .fillMaxWidth(),
+                                        fontSize = 16.sp
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -88,34 +117,8 @@ fun SearchResultList(
     }
 }
 
+@Preview(showSystemUi = true)
 @Composable
-fun SearchResultScreen(searchResult: MovieItem, navController: NavController) {
-    OutlinedCard(
-        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 5.dp),
-        onClick = {
-            navController.navigate(
-                Screens.Details.createRoute(searchResult.id)
-            )
-        }
-    ) {
-        Column {
-            AsyncImage(
-                model = searchResult.createBackdropImage(),
-                contentDescription = "Movie Image",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.height(200.dp),
-                error = painterResource(R.drawable.no_image),
-                placeholder = painterResource(R.drawable.loading)
-            )
-            searchResult.title?.let {
-                Text(
-                    text = it,
-                    modifier = Modifier
-                        .padding(5.dp)
-                        .fillMaxWidth(),
-                    fontSize = 16.sp
-                )
-            }
-        }
-    }
+fun SearchTvScreenResultPreview() {
+    SearchTvScreenResult("", rememberNavController())
 }

@@ -28,6 +28,7 @@ googleid = "1.1.1"
 
 firebaseBom = "33.12.0"
 inAppUpdate = "2.1.0"
+googleAds = "23.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -91,6 +92,7 @@ firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashly
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 
 app-update = { group = "com.google.android.play", name = "app-update-ktx", version.ref = "inAppUpdate" }
+google-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "googleAds" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

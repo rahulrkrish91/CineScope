@@ -56,13 +56,15 @@ fun MovieNowPlaying(modifier: Modifier, movieViewModel: MovieViewModel = koinVie
 
         LazyRow {
             items(result.movieNowPlayingResponse.results) { movie ->
-                MovieItem(
-                    image = "$MOVIE_IMAGE_ORIGINAL${movie.poster_path}",
-                    title = movie.title,
-                    onClick = {},
-                    height = 200.dp,
-                    width = 128.dp
-                )
+                movie.title?.let {
+                    MovieItem(
+                        image = "$MOVIE_IMAGE_ORIGINAL${movie.poster_path}",
+                        title = it,
+                        onClick = {},
+                        height = 200.dp,
+                        width = 128.dp
+                    )
+                }
             }
         }
 
@@ -73,13 +75,15 @@ fun MovieNowPlaying(modifier: Modifier, movieViewModel: MovieViewModel = koinVie
 
         LazyRow {
             items(popularResult.moviePopularResponse.results) { movie ->
-                MovieItem(
-                    image = "$MOVIE_IMAGE_ORIGINAL${movie.poster_path}",
-                    title = movie.title,
-                    onClick = {},
-                    height = 200.dp,
-                    width = 128.dp
-                )
+                movie.title?.let {
+                    MovieItem(
+                        image = "$MOVIE_IMAGE_ORIGINAL${movie.poster_path}",
+                        title = it,
+                        onClick = {},
+                        height = 200.dp,
+                        width = 128.dp
+                    )
+                }
             }
         }
     }

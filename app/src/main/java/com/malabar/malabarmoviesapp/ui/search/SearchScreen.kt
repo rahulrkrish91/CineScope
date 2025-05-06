@@ -149,17 +149,19 @@ fun SearchScreen(
                         modifier = Modifier.padding(top = 5.dp, start = 16.dp, end = 16.dp)
                     ) {
                         items(tendingMovies.result.results) { trending ->
-                            com.malabar.core.ui.MovieItem(
-                                image = trending.createPosterImage(),
-                                title = trending.title,
-                                onClick = {
-                                    navController.navigate(
-                                        Screens.Details.createRoute(trending.id)
-                                    )
-                                },
-                                height = 200.dp,
-                                width = 128.dp
-                            )
+                            trending.title?.let {
+                                com.malabar.core.ui.MovieItem(
+                                    image = trending.createPosterImage(),
+                                    title = it,
+                                    onClick = {
+                                        navController.navigate(
+                                            Screens.Details.createRoute(trending.id)
+                                        )
+                                    },
+                                    height = 200.dp,
+                                    width = 128.dp
+                                )
+                            }
                         }
                     }
                 }

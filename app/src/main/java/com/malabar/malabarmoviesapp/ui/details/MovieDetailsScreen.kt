@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -119,7 +120,9 @@ fun MovieDetailsScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(200.dp),
-                        contentScale = ContentScale.Crop
+                        contentScale = ContentScale.Crop,
+                        error = painterResource(com.malabar.core.R.drawable.no_image),
+                        placeholder = painterResource(com.malabar.core.R.drawable.loading)
                     )
 
                     Text(
@@ -213,19 +216,21 @@ fun MovieDetailsScreen(
                                 modifier = Modifier.horizontalScroll(rememberScrollState())
                             ) {
                                 recommendedState.result.results.map { recommended ->
-                                    MovieItem(
-                                        image = recommended.createBackdropImage(),
-                                        title = recommended.title,
-                                        onClick = {
-                                            navController.navigate(
-                                                Screens.Details.createRoute(
-                                                    recommended.id
+                                    recommended.title?.let {
+                                        MovieItem(
+                                            image = recommended.createBackdropImage(),
+                                            title = it,
+                                            onClick = {
+                                                navController.navigate(
+                                                    Screens.Details.createRoute(
+                                                        recommended.id
+                                                    )
                                                 )
-                                            )
-                                        },
-                                        height = 200.dp,
-                                        width = 128.dp
-                                    )
+                                            },
+                                            height = 200.dp,
+                                            width = 128.dp
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -256,19 +261,21 @@ fun MovieDetailsScreen(
                                     modifier = Modifier.horizontalScroll(rememberScrollState())
                                 ) {
                                     similarState.result.results.map { similar ->
-                                        MovieItem(
-                                            image = similar.createBackdropImage(),
-                                            title = similar.title,
-                                            onClick = {
-                                                navController.navigate(
-                                                    Screens.Details.createRoute(
-                                                        similar.id
+                                        similar.title?.let {
+                                            MovieItem(
+                                                image = similar.createBackdropImage(),
+                                                title = it,
+                                                onClick = {
+                                                    navController.navigate(
+                                                        Screens.Details.createRoute(
+                                                            similar.id
+                                                        )
                                                     )
-                                                )
-                                            },
-                                            height = 200.dp,
-                                            width = 128.dp
-                                        )
+                                                },
+                                                height = 200.dp,
+                                                width = 128.dp
+                                            )
+                                        }
                                     }
                                 }
                             }

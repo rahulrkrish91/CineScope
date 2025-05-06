@@ -19,3 +19,23 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-dontwarn retrofit2.**
+-keep class retrofit2.** { *; }
+-keepattributes Signature
+
+# Keep your model classes
+-keepnames class com.malabar.** { *; }
+# Keep Gson dependencies
+-keep class sun.misc.Unsafe { *; }
+-dontwarn okio.**
+
+-dontwarn javax.annotation.**
+-keepattributes Signature
+-keepattributes *Annotation*
+-keep class com.google.gson.** { *; }
+
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+
+-keep class com.malabar.** { *; }

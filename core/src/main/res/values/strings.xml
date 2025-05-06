@@ -17,4 +17,5 @@
     <string name="search">Search</string>
     <string name="default_web_client_id">625793187063</string>
     <string name="search_result">Search Result</string>
+    <string name="search_tv_shows">Search Tv Shows</string>
 </resources>

@@ -12,13 +12,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.google.android.gms.ads.MobileAds
 import com.malabar.core.ui.CommonToolbar
 import com.malabar.malabarmoviesapp.navigation.Screens
 import com.malabar.malabarmoviesapp.navigation.bottom_nav.BottomNavigationBar
@@ -32,6 +32,8 @@ import com.malabar.malabarmoviesapp.ui.profile.ProfileScreen
 import com.malabar.malabarmoviesapp.ui.review.MovieReviews
 import com.malabar.malabarmoviesapp.ui.search.SearchResultList
 import com.malabar.malabarmoviesapp.ui.search.SearchScreen
+import com.malabar.malabarmoviesapp.ui.search.SearchTvScreen
+import com.malabar.malabarmoviesapp.ui.search.SearchTvScreenResult
 import com.malabar.malabarmoviesapp.ui.security.LoginScreen
 import com.malabar.malabarmoviesapp.ui.theme.MalabarMoviesAppTheme
 import com.malabar.malabarmoviesapp.ui.tv.TvScreen
@@ -46,8 +48,8 @@ class MainActivity : ComponentActivity() {
     val updateViewModel: InAppUpdateViewModel by viewModel { parametersOf(this@MainActivity) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         enableEdgeToEdge()
+        MobileAds.initialize(this)
         setContent {
             MalabarMoviesAppTheme {
                 setContent {
@@ -73,9 +75,11 @@ fun MainScreen(updateViewModel: InAppUpdateViewModel) {
         Screens.Profile.route
     )
 
-
     val topAppBarScreens = listOf(
-        Screens.Home.route,
+        Screens.Home.route
+    )
+
+    val topAppBarTv = listOf(
         Screens.Tv.route
     )
 
@@ -85,6 +89,7 @@ fun MainScreen(updateViewModel: InAppUpdateViewModel) {
     // Check if the current destination is in the list of screens to show the bottom bar
     val showBottomBar = navBackStackEntry?.destination?.route in bottomNavScreens
     val showTopBar = navBackStackEntry?.destination?.route in topAppBarScreens
+    val showTvTopBAr = navBackStackEntry?.destination?.route in topAppBarTv
 
     Scaffold(
         modifier = Modifier
@@ -95,6 +100,12 @@ fun MainScreen(updateViewModel: InAppUpdateViewModel) {
                 CommonToolbar(
                     onSearchClick = {
                         navController.navigate(Screens.Search.route)
+                    }
+                )
+            } else if(showTvTopBAr) {
+                CommonToolbar(
+                    onSearchClick = {
+                        navController.navigate(Screens.SearchTv.route)
                     }
                 )
             }
@@ -189,6 +200,22 @@ fun MainScreen(updateViewModel: InAppUpdateViewModel) {
             ) { backStackEntry ->
                 val query = backStackEntry.arguments?.getString("query")
                 SearchResultList(query, navController)
+            }
+
+            composable(route = Screens.SearchTv.route) {
+                SearchTvScreen(navController)
+            }
+
+            composable(
+                route = Screens.SearchTvResult.route,
+                arguments = listOf(
+                    navArgument("query") {
+                        type = NavType.StringType
+                    }
+                )
+            ) { backStackEntry ->
+                val query = backStackEntry.arguments?.getString("query")
+                SearchTvScreenResult(query, navController)
             }
 
             composable(

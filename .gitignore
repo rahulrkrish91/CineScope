@@ -21,12 +21,12 @@ build/
 
 # Local configuration files
 local.properties
-
 # IDE specific files
 .idea/
 *.iml
 *.ipr
 *.iws
+.app/
 
 # Keystore files (DO NOT commit these!)
 *.jks
@@ -51,3 +51,5 @@ crashlytics-build.properties
 
 # Android Studio Navigation Editor temp files
 .navigation/
+
+.kotlin/
