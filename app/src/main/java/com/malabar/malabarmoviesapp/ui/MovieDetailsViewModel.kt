@@ -7,12 +7,14 @@ import com.malabar.core.data.params.IdParam
 import com.malabar.core.data.params.MovieCastParams
 import com.malabar.core.data.params.RecommendedMovieParams
 import com.malabar.malabarmoviesapp.domain.data.cast.MovieCastResponse
+import com.malabar.malabarmoviesapp.domain.data.cast.credits.MovieCastCreditsResponse
 import com.malabar.malabarmoviesapp.domain.data.cast.details.MovieCastInfo
 import com.malabar.malabarmoviesapp.domain.data.details.MovieDetailsResponse
 import com.malabar.malabarmoviesapp.domain.data.images.MovieImageResponse
 import com.malabar.malabarmoviesapp.domain.data.recommended.MovieRecommendedResponse
 import com.malabar.malabarmoviesapp.domain.data.reviews.MovieReviewResponse
 import com.malabar.malabarmoviesapp.domain.data.video.MovieVideoResponse
+import com.malabar.malabarmoviesapp.domain.interactors.GetMovieCastCreditsUseCase
 import com.malabar.malabarmoviesapp.domain.interactors.GetMovieCastInfoUseCase
 import com.malabar.malabarmoviesapp.domain.interactors.GetMovieCreditsUseCase
 import com.malabar.malabarmoviesapp.domain.interactors.GetMovieDetailsUseCase
@@ -33,7 +35,8 @@ class MovieDetailsViewModel(
     private val getSimilarMoviesUseCase: GetSimilarMoviesUseCase,
     private val getMovieImagesUseCase: GetMovieImagesUseCase,
     private val getMovieVideoUseCase: GetMovieVideoUseCase,
-    private val getMovieReviewsUseCase: GetMovieReviewsUseCase
+    private val getMovieReviewsUseCase: GetMovieReviewsUseCase,
+    private val getMovieCastCreditsUseCase: GetMovieCastCreditsUseCase
 ) : BaseViewModel() {
 
     private val _mutableDetailsState =
@@ -67,6 +70,10 @@ class MovieDetailsViewModel(
     private val _mutableMovieReviewState =
         MutableStateFlow<MovieReviewsState>(MovieReviewsState.Loading)
     val mutableMovieReviewState: StateFlow<MovieReviewsState> = _mutableMovieReviewState
+
+    private val _mutableMovieCastCreditState =
+        MutableStateFlow<MovieCastCreditState>(MovieCastCreditState.Loading)
+    val mutableMovieCastCreditState: StateFlow<MovieCastCreditState> = _mutableMovieCastCreditState
 
 
     fun retrieveMovieDetails(id: Int) = viewModelScope.launch {
@@ -170,6 +177,25 @@ class MovieDetailsViewModel(
             )
         }
     }
+
+    fun retrieveMovieCastCredits(personId: Int) {
+        _mutableMovieCastCreditState.value = MovieCastCreditState.Loading
+        getMovieCastCreditsUseCase(IdParam(personId)) {
+            viewModelScope.launch {
+                it.collect {
+                    it.fold(
+                        { error ->
+                            handleFailure(error)
+                        },
+                        { result ->
+                            _mutableMovieCastCreditState.value =
+                                MovieCastCreditState.Success(result)
+                        }
+                    )
+                }
+            }
+        }
+    }
 }
 
 sealed class MovieDetailsState {
@@ -210,4 +236,9 @@ sealed class MovieVideoState {
 sealed class MovieReviewsState {
     object Loading : MovieReviewsState()
     data class Success(val result: MovieReviewResponse) : MovieReviewsState()
+}
+
+sealed class MovieCastCreditState {
+    object Loading : MovieCastCreditState()
+    data class Success(val result: MovieCastCreditsResponse) : MovieCastCreditState()
 }

@@ -1,21 +1,22 @@
-package com.malabar.malabarmoviesapp.domain.repository.tv
+package com.malabar.malabarmoviesapp.domain.repository
 
 import arrow.core.Either
 import com.malabar.core.failure.Failure
 import com.malabar.malabarmoviesapp.api.MovieApi
-import com.malabar.malabarmoviesapp.domain.data.tv.airing_today.AiringTodayResponse
+import com.malabar.malabarmoviesapp.domain.data.cast.credits.MovieCastCreditsResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 
-class TvTopRatedRepository(
+class MovieCastCreditsRepository(
     private val movieApi: MovieApi
 ) {
 
-    suspend fun retrieveTopRatedTv(): Flow<Either<Failure, AiringTodayResponse>> {
+    suspend fun retrievePersonMovieCredits(
+        personId: Int
+    ): Flow<Either<Failure, MovieCastCreditsResponse>> {
         return flow {
-            val result = movieApi.retrieveTopRatedTv()
-            emit(Either.Right(result))
+            emit(Either.Right(movieApi.retrievePersonMovieCredits(personId)))
         }.catch { ex ->
             Either.Left(Failure.ServerError(ex))
         }

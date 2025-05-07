@@ -3,6 +3,7 @@ package com.malabar.malabarmoviesapp.api
 import com.malabar.malabarmoviesapp.domain.data.MovieNowPlayingResponse
 import com.malabar.malabarmoviesapp.domain.data.MoviePopularResponse
 import com.malabar.malabarmoviesapp.domain.data.cast.MovieCastResponse
+import com.malabar.malabarmoviesapp.domain.data.cast.credits.MovieCastCreditsResponse
 import com.malabar.malabarmoviesapp.domain.data.cast.details.MovieCastInfo
 import com.malabar.malabarmoviesapp.domain.data.details.MovieDetailsResponse
 import com.malabar.malabarmoviesapp.domain.data.images.MovieImageResponse
@@ -12,6 +13,7 @@ import com.malabar.malabarmoviesapp.domain.data.search.MovieSearchResponse
 import com.malabar.malabarmoviesapp.domain.data.search.multi.result.MultiSearchResponse
 import com.malabar.malabarmoviesapp.domain.data.search.trending.TrendingPersonResult
 import com.malabar.malabarmoviesapp.domain.data.tv.airing_today.AiringTodayResponse
+import com.malabar.malabarmoviesapp.domain.data.tv.cast.credits.TvCastCreditsResponse
 import com.malabar.malabarmoviesapp.domain.data.tv.details.TvShowDetailsResponse
 import com.malabar.malabarmoviesapp.domain.data.tv.episode.EpisodeDetails
 import com.malabar.malabarmoviesapp.domain.data.tv.search.TvSearchResponse
@@ -116,6 +118,11 @@ interface MovieApi {
         @Path("time_window") timeWindow: String
     ): TrendingPersonResult
 
+    @GET("person/{person_id}/movie_credits")
+    suspend fun retrievePersonMovieCredits(
+        @Path("person_id") personId: Int
+    ): MovieCastCreditsResponse
+
     // Tv
     @GET("tv/airing_today")
     suspend fun retrievingTvAiringToday(): AiringTodayResponse
@@ -184,4 +191,9 @@ interface MovieApi {
     suspend fun retrieveTvSearchResult(
         @Query("query") query: String
     ): TvSearchResponse
+
+    @GET("person/{person_id}/tv_credits")
+    suspend fun retrievePersonTvCredits(
+        @Path("person_id") personId: Int
+    ): TvCastCreditsResponse
 }

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -36,6 +37,7 @@ import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImage
 import com.malabar.core.AppConstants.Companion.MOVIE_IMAGE_ORIGINAL
 import com.malabar.core.AppConstants.Companion.MOVIE_IMAGE_W_500
+import com.malabar.core.ui.AsyncImageWithPlaceholder
 import com.malabar.core.ui.CommonToolbarWithTrailingIcons
 import com.malabar.core.ui.ExpandableText
 import com.malabar.core.ui.MovieItem
@@ -114,6 +116,10 @@ fun MovieDetailsScreen(
             is MovieDetailsState.Success -> {
                 val detailsResult = state.result
                 Column {
+                    /*AsyncImageWithPlaceholder(
+                        model = "$MOVIE_IMAGE_ORIGINAL${detailsResult.backdrop_path}",
+                        contentDescription = detailsResult.title,
+                    )*/
                     AsyncImage(
                         model = "$MOVIE_IMAGE_ORIGINAL${detailsResult.backdrop_path}",
                         contentDescription = detailsResult.title,
@@ -136,6 +142,22 @@ fun MovieDetailsScreen(
                         fontSize = 15.sp,
                         modifier = Modifier.padding(5.dp)
                     )
+
+                    Row(
+                        modifier = Modifier.padding(5.dp)
+                    ) {
+                        detailsResult.genres.map {
+                            AssistChip(
+                                modifier = Modifier.padding(5.dp),
+                                label = {
+                                    Text(
+                                        text = it.name
+                                    )
+                                },
+                                onClick = {}
+                            )
+                        }
+                    }
 
                     if (detailsResult.production_companies.isNotEmpty()) {
                         Text(
@@ -186,7 +208,8 @@ fun MovieDetailsScreen(
                                             cast.name,
                                             cast.character,
                                             it,
-                                            cast.id
+                                            cast.id,
+                                            navController = navController
                                         )
                                     }
                                 }

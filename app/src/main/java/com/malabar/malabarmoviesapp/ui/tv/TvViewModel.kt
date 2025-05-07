@@ -9,6 +9,7 @@ import com.malabar.core.data.params.TvSeasonParams
 import com.malabar.malabarmoviesapp.domain.data.cast.MovieCastResponse
 import com.malabar.malabarmoviesapp.domain.data.search.MovieSearchResponse
 import com.malabar.malabarmoviesapp.domain.data.tv.airing_today.AiringTodayResponse
+import com.malabar.malabarmoviesapp.domain.data.tv.cast.credits.TvCastCreditsResponse
 import com.malabar.malabarmoviesapp.domain.data.tv.details.TvShowDetailsResponse
 import com.malabar.malabarmoviesapp.domain.data.tv.episode.EpisodeDetails
 import com.malabar.malabarmoviesapp.domain.data.tv.search.TvSearchResponse
@@ -18,6 +19,7 @@ import com.malabar.malabarmoviesapp.domain.interactors.tv.GetPopularTvShowUseCas
 import com.malabar.malabarmoviesapp.domain.interactors.tv.GetTopRatedTvShowUseCase
 import com.malabar.malabarmoviesapp.domain.interactors.tv.GetTrendingTvShowsUseCase
 import com.malabar.malabarmoviesapp.domain.interactors.tv.GetTvAiringTodayUseCase
+import com.malabar.malabarmoviesapp.domain.interactors.tv.GetTvCastCreditsUseCase
 import com.malabar.malabarmoviesapp.domain.interactors.tv.GetTvCreditsUseCase
 import com.malabar.malabarmoviesapp.domain.interactors.tv.GetTvEpisodeDetailsUseCase
 import com.malabar.malabarmoviesapp.domain.interactors.tv.GetTvEpisodeVideoUseCase
@@ -46,7 +48,8 @@ class TvViewModel(
     private val getTvSeriesVideoUseCase: GetTvSeriesVideoUseCase,
     private val getTvSeasonVideoUseCase: GetTvSeasonVideoUseCase,
     private val getTvEpisodeVideoUseCase: GetTvEpisodeVideoUseCase,
-    private val getTvSearchResultUseCase: GetTvSearchResultUseCase
+    private val getTvSearchResultUseCase: GetTvSearchResultUseCase,
+    private val getTvCastCreditsUseCase: GetTvCastCreditsUseCase
 ) : BaseViewModel() {
 
     private val _mutableAiringTodayState =
@@ -104,6 +107,10 @@ class TvViewModel(
 
     private val _mutableTvSearchState = MutableStateFlow<TvSearchState>(TvSearchState.Loading)
     val mutableTvSearchState: StateFlow<TvSearchState> = _mutableTvSearchState
+
+    private val _mutableTvCastCreditsState =
+        MutableStateFlow<TvCastCreditsState>(TvCastCreditsState.Loading)
+    val mutableTvCastCreditsState: StateFlow<TvCastCreditsState> = _mutableTvCastCreditsState
 
     fun retrieveAiringToday() {
         _mutableAiringTodayState.value = TvAiringTodayState.Loading
@@ -330,6 +337,22 @@ class TvViewModel(
             )
         }
     }
+
+    fun retrieveTvCastCredits(personId: Int) {
+        _mutableTvCastCreditsState.value = TvCastCreditsState.Loading
+        getTvCastCreditsUseCase(IdParam(personId)) {
+            viewModelScope.launch {
+                it.collect {
+                    it.fold(
+                        { error -> handleFailure(error) },
+                        { result ->
+                            _mutableTvCastCreditsState.value = TvCastCreditsState.Success(result)
+                        }
+                    )
+                }
+            }
+        }
+    }
 }
 
 sealed class TvAiringTodayState {
@@ -400,4 +423,9 @@ sealed class TvEpisodeVideoState {
 sealed class TvSearchState {
     object Loading : TvSearchState()
     data class Success(val data: TvSearchResponse) : TvSearchState()
+}
+
+sealed class TvCastCreditsState {
+    object Loading : TvCastCreditsState()
+    data class Success(val data: TvCastCreditsResponse) : TvCastCreditsState()
 }

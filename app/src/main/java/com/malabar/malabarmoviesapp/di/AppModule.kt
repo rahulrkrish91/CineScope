@@ -8,6 +8,7 @@ import com.malabar.core.AppConstants.Companion.MOVIE_HEADER
 import com.malabar.malabarmoviesapp.api.MovieApi
 import com.malabar.malabarmoviesapp.domain.data.app_update.InAppUpdateManager
 import com.malabar.malabarmoviesapp.domain.data.app_update.InAppUpdateManagerImpl
+import com.malabar.malabarmoviesapp.domain.interactors.GetMovieCastCreditsUseCase
 import com.malabar.malabarmoviesapp.domain.interactors.GetMovieCastInfoUseCase
 import com.malabar.malabarmoviesapp.domain.interactors.GetMovieCreditsUseCase
 import com.malabar.malabarmoviesapp.domain.interactors.GetMovieDetailsUseCase
@@ -30,6 +31,7 @@ import com.malabar.malabarmoviesapp.domain.interactors.tv.GetPopularTvShowUseCas
 import com.malabar.malabarmoviesapp.domain.interactors.tv.GetTopRatedTvShowUseCase
 import com.malabar.malabarmoviesapp.domain.interactors.tv.GetTrendingTvShowsUseCase
 import com.malabar.malabarmoviesapp.domain.interactors.tv.GetTvAiringTodayUseCase
+import com.malabar.malabarmoviesapp.domain.interactors.tv.GetTvCastCreditsUseCase
 import com.malabar.malabarmoviesapp.domain.interactors.tv.GetTvCreditsUseCase
 import com.malabar.malabarmoviesapp.domain.interactors.tv.GetTvEpisodeDetailsUseCase
 import com.malabar.malabarmoviesapp.domain.interactors.tv.GetTvEpisodeVideoUseCase
@@ -40,6 +42,7 @@ import com.malabar.malabarmoviesapp.domain.interactors.tv.GetTvSeasonDetailsUseC
 import com.malabar.malabarmoviesapp.domain.interactors.tv.GetTvSeasonVideoUseCase
 import com.malabar.malabarmoviesapp.domain.interactors.tv.GetTvSeriesDetailsUseCase
 import com.malabar.malabarmoviesapp.domain.interactors.tv.GetTvSeriesVideoUseCase
+import com.malabar.malabarmoviesapp.domain.repository.MovieCastCreditsRepository
 import com.malabar.malabarmoviesapp.domain.repository.MovieCastRepository
 import com.malabar.malabarmoviesapp.domain.repository.MovieDetailsRepository
 import com.malabar.malabarmoviesapp.domain.repository.MovieNowPlayingRepository
@@ -54,6 +57,7 @@ import com.malabar.malabarmoviesapp.domain.repository.auth.AuthRepository
 import com.malabar.malabarmoviesapp.domain.repository.auth.AuthRepositoryImpl
 import com.malabar.malabarmoviesapp.domain.repository.auth.TvRecommendationsRepository
 import com.malabar.malabarmoviesapp.domain.repository.tv.TvAiringTodayRepository
+import com.malabar.malabarmoviesapp.domain.repository.tv.TvCastCreditsRepository
 import com.malabar.malabarmoviesapp.domain.repository.tv.TvCreditsRepository
 import com.malabar.malabarmoviesapp.domain.repository.tv.TvEpisodeDetailsRepository
 import com.malabar.malabarmoviesapp.domain.repository.tv.TvOnTheAirRepository
@@ -163,6 +167,7 @@ val repositoryModule = module {
     }
     singleOf(::MovieTrendingRepository)
     singleOf(::MovieReviewRepository)
+    singleOf(::MovieCastCreditsRepository)
 
     // Tv
     singleOf(::TvAiringTodayRepository)
@@ -177,6 +182,7 @@ val repositoryModule = module {
     singleOf(::TvRecommendationsRepository)
     singleOf(::TvSeriesVideoRepository)
     singleOf(::TvSearchRepository)
+    singleOf(::TvCastCreditsRepository)
 }
 
 val interactorModule = module {
@@ -196,6 +202,7 @@ val interactorModule = module {
     factoryOf(::GetMovieReviewsUseCase)
     factoryOf(::GetTrendingPersonUseCase)
     factoryOf(::GetMultiSearchUseCase)
+    factoryOf(::GetMovieCastCreditsUseCase)
 
     // Tv
     factoryOf(::GetTvAiringTodayUseCase)
@@ -212,6 +219,7 @@ val interactorModule = module {
     factoryOf(::GetTvSeasonVideoUseCase)
     factoryOf(::GetTvEpisodeVideoUseCase)
     factoryOf(::GetTvSearchResultUseCase)
+    factoryOf(::GetTvCastCreditsUseCase)
 
     factory<InAppUpdateManager> { (activity: Activity) ->
         InAppUpdateManagerImpl(activity)

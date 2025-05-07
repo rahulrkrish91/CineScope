@@ -235,7 +235,7 @@ fun SearchScreen(
                                     sheetState = sheetState,
                                     onDismissRequest = { showBottomSheet = false }
                                 ) {
-                                    CastInfoScreen(trendingPerson.id)
+                                    CastInfoScreen(trendingPerson.id, navController = rememberNavController())
                                     /*Text(
                                         "Swipe up to open sheet. Swipe down to dismiss.",
                                         modifier = Modifier.padding(16.dp)

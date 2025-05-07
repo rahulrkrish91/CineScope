@@ -178,7 +178,7 @@ fun TvShowDetails(
                                 sheetState = sheetState,
                                 onDismissRequest = { showBottomSheet = false }
                             ) {
-                                CastInfoScreen(creator.id)
+                                TvCastInfoScreen(creator.id, navController = navController)
                             }
                         }
                     }
@@ -215,7 +215,7 @@ fun TvShowDetails(
                                         sheetState = castSheetState,
                                         onDismissRequest = { showCastBottomSheet = false }
                                     ) {
-                                        CastInfoScreen(cast.id)
+                                        TvCastInfoScreen(cast.id, navController = navController)
                                     }
                                 }
                             }
