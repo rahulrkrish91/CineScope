@@ -92,9 +92,13 @@ dependencies {
     api(libs.lottie)
 
     api(libs.firebase.auth)
+    api(libs.firebase.auth.ktx)
     api(libs.androidx.credentials)
     api(libs.androidx.credentials.play.services.auth)
     api(libs.googleid)
+    api(libs.play.services.auth)
+    api(libs.firebase.realtime.database)
+    api(libs.firebase.messaging)
 
     api(platform(libs.firebase.bom))
     api(libs.firebase.crashlytics)

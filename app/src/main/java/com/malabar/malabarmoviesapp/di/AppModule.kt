@@ -1,10 +1,18 @@
 package com.malabar.malabarmoviesapp.di
 
 import android.app.Activity
+import androidx.room.Room
+import androidx.room.RoomDatabase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.malabar.core.AppConstants.Companion.MOVIE_BASE_URL
 import com.malabar.core.AppConstants.Companion.MOVIE_HEADER
+import com.malabar.core.db.AppDatabase
+import com.malabar.core.db.dao.ApiKeyDao
+import com.malabar.core.db.interactors.DeleteApiKeyUseCase
+import com.malabar.core.db.interactors.GetApiKeyUseCase
+import com.malabar.core.db.interactors.InsertApiKeyUseCase
+import com.malabar.core.db.repository.ApiKeyRepository
 import com.malabar.malabarmoviesapp.api.MovieApi
 import com.malabar.malabarmoviesapp.domain.data.app_update.InAppUpdateManager
 import com.malabar.malabarmoviesapp.domain.data.app_update.InAppUpdateManagerImpl
@@ -152,7 +160,7 @@ val authModule = module {
 }
 
 val repositoryModule = module {
-    single{
+    single {
         Gson()
     }
     singleOf(::MovieNowPlayingRepository)
@@ -245,10 +253,31 @@ val viewModelModule = module {
     }
 }
 
+val databaseModule = module {
+    single {
+        Room.databaseBuilder(
+            get(),
+            AppDatabase::class.java,
+            "cine_scope_db"
+        )
+    }
+
+    single<ApiKeyDao> {
+        get<AppDatabase>().apiKeyDao()
+    }
+
+    singleOf(::ApiKeyRepository)
+
+    factoryOf(::InsertApiKeyUseCase)
+    factoryOf(::GetApiKeyUseCase)
+    factoryOf(::DeleteApiKeyUseCase)
+}
+
 val appModule: List<Module> = listOf(
     authModule,
     networkModule,
     repositoryModule,
     interactorModule,
-    viewModelModule
+    viewModelModule,
+    databaseModule
 )

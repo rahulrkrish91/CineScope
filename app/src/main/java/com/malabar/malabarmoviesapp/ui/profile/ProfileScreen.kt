@@ -26,8 +26,8 @@ import com.malabar.malabarmoviesapp.navigation.Screens
 @Composable
 fun ProfileScreen(navController: NavController) {
 
-    /*var auth: FirebaseAuth = FirebaseAuth.*//*getInstance()
-    var user = auth.currentUser*/
+    var auth: FirebaseAuth = FirebaseAuth.getInstance()
+    var user = auth.currentUser
     val context = LocalContext.current
     Scaffold { innerPadding ->
         Column(
@@ -36,7 +36,7 @@ fun ProfileScreen(navController: NavController) {
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            /*AsyncImage(
+            AsyncImage(
                 model = user?.photoUrl,
                 contentDescription = "Profile Image",
                 modifier = Modifier
@@ -44,17 +44,17 @@ fun ProfileScreen(navController: NavController) {
                     .align(Alignment.CenterHorizontally)
                     .clip(CircleShape)
                     .size(100.dp)
-            )*/
+            )
 
-          /*  user?.email?.let {
+            user?.email?.let {
                 Text(
                     text = it
                 )
-            }*/
+            }
 
             OutlinedButton(
                 onClick = {
-                    //auth.signOut()
+                    auth.signOut()
                     val activity = context as? Activity
                     if (activity != null) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

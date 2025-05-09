@@ -39,3 +39,8 @@
 }
 
 -keep class com.malabar.** { *; }
+
+-keep class com.google.firebase.** { *; }
+-keep class com.google.android.gms.** { *; }
+-keepattributes Signature
+-keepattributes *Annotation*

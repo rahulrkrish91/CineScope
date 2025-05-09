@@ -18,8 +18,8 @@ android {
         applicationId = "com.malabar.malabarmoviesapp"
         minSdk = 24
         targetSdk = 35
-        versionCode = 6
-        versionName = "05.06.2025"
+        versionCode = 10
+        versionName = "05.09.2025.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -52,6 +52,5 @@ android {
 dependencies {
 
     implementation(project(path = ":core"))
-    implementation("com.google.firebase:firebase-auth-ktx:22.3.1")
     implementation("com.google.android.gms:play-services-auth:21.0.0")
 }

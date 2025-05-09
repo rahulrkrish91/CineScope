@@ -1,9 +1,16 @@
 package com.malabar.malabarmoviesapp
 
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -11,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -19,6 +27,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.gms.auth.api.identity.SignInClient
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.database.FirebaseDatabase
 import com.malabar.core.ui.CommonToolbar
 import com.malabar.malabarmoviesapp.navigation.Screens
 import com.malabar.malabarmoviesapp.navigation.bottom_nav.BottomNavigationBar
@@ -46,14 +59,79 @@ import org.koin.core.parameter.parametersOf
 
 class MainActivity : ComponentActivity() {
     val updateViewModel: InAppUpdateViewModel by viewModel { parametersOf(this@MainActivity) }
+
+    private val firebaseAuth = FirebaseAuth.getInstance()
+    private lateinit var oneTapClient: SignInClient
+    private val launcher =
+        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val credential = oneTapClient.getSignInCredentialFromIntent(result.data)
+                val idToken = credential.googleIdToken
+                if (idToken != null) {
+                    val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
+                    firebaseAuth.signInWithCredential(firebaseCredential)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                handleSignInResult(idToken)
+                                Log.d("FirebaseAuth", "signInWithCredential:success")
+                            } else {
+                                Log.w(
+                                    "FirebaseAuth",
+                                    "signInWithCredential:failure",
+                                    task.exception
+                                )
+                            }
+                        }
+                }
+            }
+        }
+
+    private fun handleSignInResult(idToken: String) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        FirebaseAuth.getInstance().signInWithCredential(credential)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d("FirebaseAuth", "signInWithCredential:success")
+                    fetchApiKeyFromDatabase()
+                } else {
+                    Log.w("FirebaseAuth", "signInWithCredential:failure", task.exception)
+                }
+            }
+    }
+
+    private fun fetchApiKeyFromDatabase() {
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user != null) {
+            val databaseRef = FirebaseDatabase.getInstance()
+                .getReference("api_key") // or just "api_keys/key" if it's shared
+            databaseRef.get()
+                .addOnSuccessListener { dataSnapshot ->
+                    val apiKey = dataSnapshot.getValue(String::class.java)
+                    Log.d("API_KEY", "Fetched key: $apiKey")
+                    // Use your API key here
+                    setContent {
+                        MainScreen(updateViewModel, launcher, oneTapClient)
+                    }
+                }
+                .addOnFailureListener { e ->
+                    Log.e("API_KEY", "Failed to fetch key", e)
+                }
+        } else {
+            Log.w("API_KEY", "User not signed in, cannot fetch key")
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        oneTapClient = Identity.getSignInClient(this)
         MobileAds.initialize(this)
         setContent {
             MalabarMoviesAppTheme {
                 setContent {
-                    MainScreen(updateViewModel)
+                    //HomeScreen(navController = rememberNavController())
+                    MainScreen(updateViewModel, launcher, oneTapClient)
                 }
             }
         }
@@ -61,7 +139,31 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen(updateViewModel: InAppUpdateViewModel) {
+fun RequestNotificationPermission() {
+    val context = LocalContext.current
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            if (!isGranted) {
+                Toast.makeText(context, "Notification permission not granted. Enable it from app settings", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+    )
+
+    LaunchedEffect(Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+}
+
+@Composable
+fun MainScreen(
+    updateViewModel: InAppUpdateViewModel,
+    launcher: ActivityResultLauncher<IntentSenderRequest>,
+    oneTapClient: SignInClient
+) {
 
     LaunchedEffect(Unit) {
         //updateViewModel.checkAndStartUpdate()
@@ -102,7 +204,7 @@ fun MainScreen(updateViewModel: InAppUpdateViewModel) {
                         navController.navigate(Screens.Search.route)
                     }
                 )
-            } else if(showTvTopBAr) {
+            } else if (showTvTopBAr) {
                 CommonToolbar(
                     onSearchClick = {
                         navController.navigate(Screens.SearchTv.route)
@@ -112,19 +214,21 @@ fun MainScreen(updateViewModel: InAppUpdateViewModel) {
 
         }
     ) { innerPadding ->
+        val user = FirebaseAuth.getInstance().currentUser
         NavHost(
             navController = navController,
-            startDestination = Screens.Home.route,
+            startDestination = if (user == null) Screens.Login.route else Screens.Home.route,
             modifier = Modifier.padding(innerPadding)
         ) {
 
             composable(
                 route = Screens.Login.route
             ) {
-                LoginScreen(navController)
+                LoginScreen(navController, launcher = launcher, oneTapClient = oneTapClient)
             }
 
             composable(route = Screens.Home.route) {
+                RequestNotificationPermission()
                 HomeScreen(navController)
             }
             composable(

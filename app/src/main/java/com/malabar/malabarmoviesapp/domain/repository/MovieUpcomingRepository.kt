@@ -1,6 +1,8 @@
 package com.malabar.malabarmoviesapp.domain.repository
 
 import arrow.core.Either
+import arrow.core.left
+import com.malabar.core.base.safeApiCall
 import com.malabar.core.failure.Failure
 import com.malabar.malabarmoviesapp.api.MovieApi
 import com.malabar.malabarmoviesapp.domain.data.MovieNowPlayingResponse
@@ -14,16 +16,18 @@ class MovieUpcomingRepository(
     private val movieApi: MovieApi
 ) {
 
-    suspend fun retrieveUpcomingMovies(
+    fun retrieveUpcomingMovies(
         language: String,
         page: Int,
         region: String
     ): Flow<Either<Failure, MovieNowPlayingResponse>> {
         return flow {
-            emit(Either.Right(movieApi.retrieveUpcomingMovies(language, page, region)))
-        }.catch {
-            Either.Left(Failure.ServerError(it))
+            emit(
+                Either.Right(movieApi.retrieveUpcomingMovies(language, page, region))
+            )
         }
-            .flowOn(Dispatchers.IO)
+            .catch { ex ->
+                Either.Left(Failure.ServerError(ex.cause))
+            }.flowOn(Dispatchers.IO)
     }
 }

@@ -2,6 +2,7 @@ package com.malabar.malabarmoviesapp.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.malabar.core.base.BaseViewModel
 import com.malabar.core.data.MovieMaxMinDateItem
 import com.malabar.core.data.params.MovieNowPlayingParams
 import com.malabar.malabarmoviesapp.domain.data.MovieNowPlayingResponse
@@ -19,7 +20,7 @@ class MovieViewModel(
     private val getPopularMovieUseCase: GetPopularMovieUseCase,
     private val getTopRatedMovieUseCase: GetTopRatedMovieUseCase,
     private val getUpcomingMovieUseCase: GetUpcomingMovieUseCase
-) : ViewModel() {
+) : BaseViewModel() {
 
     private val _mutableNowPlayingMovie = MutableStateFlow(
         MovieNowPlayingState.Success(
