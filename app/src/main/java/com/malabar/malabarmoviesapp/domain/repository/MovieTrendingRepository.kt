@@ -1,11 +1,13 @@
 package com.malabar.malabarmoviesapp.domain.repository
 
 import arrow.core.Either
+import com.malabar.core.AnalyticsHelper
 import com.malabar.core.failure.Failure
 import com.malabar.malabarmoviesapp.api.MovieApi
 import com.malabar.malabarmoviesapp.domain.data.MoviePopularResponse
 import com.malabar.malabarmoviesapp.domain.data.search.trending.TrendingPersonResult
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 
 class MovieTrendingRepository(
@@ -26,6 +28,8 @@ class MovieTrendingRepository(
         } catch (ex: Exception) {
             emit(Either.Left(Failure.ServerError(ex.cause)))
         }
+    }.catch { ex ->
+        Either.Left(Failure.ServerError(ex.cause))
     }
 
     suspend fun retrieveTrendingPersons(
@@ -40,5 +44,7 @@ class MovieTrendingRepository(
         } catch (ex: Exception) {
             emit(Either.Left(Failure.ServerError(ex.cause)))
         }
+    }.catch { ex ->
+        Either.Left(Failure.ServerError(ex.cause))
     }
 }

@@ -2,6 +2,7 @@ package com.malabar.malabarmoviesapp.domain.repository
 
 import arrow.core.Either
 import arrow.core.left
+import com.malabar.core.AnalyticsHelper
 import com.malabar.core.base.safeApiCall
 import com.malabar.core.failure.Failure
 import com.malabar.malabarmoviesapp.api.MovieApi
@@ -27,6 +28,10 @@ class MovieUpcomingRepository(
             )
         }
             .catch { ex ->
+                AnalyticsHelper.logEvent(
+                    name = "HomeScreen_UpcomingMovies",
+                    params = mapOf("Exception" to ex.localizedMessage)
+                )
                 Either.Left(Failure.ServerError(ex.cause))
             }.flowOn(Dispatchers.IO)
     }

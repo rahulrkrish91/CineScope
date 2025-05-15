@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "625793187063-k3out6s7l3graaurlheum10hl0ojdrf0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.malabar.malabarmoviesapp",
+            "certificate_hash": "2821ff33e63cb96aaa8b5df96d256dfe6cc86ea9"
+          }
+        },
+        {
           "client_id": "625793187063-bfk4uq5s26vog25vj3dtgp0ah1084gog.apps.googleusercontent.com",
           "client_type": 3
         }

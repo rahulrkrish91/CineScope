@@ -1,27 +1,25 @@
 package com.malabar.malabarmoviesapp.ui.security
 
-import android.util.Log
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.IntentSenderRequest
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,34 +27,35 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.google.android.gms.auth.api.identity.SignInClient
+import com.google.firebase.auth.FirebaseUser
+import com.malabar.core.AnalyticsHelper
 import com.malabar.core.R
-import com.malabar.core.auth.GoogleSignInHelper
+import com.malabar.malabarmoviesapp.navigation.Screens
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LoginScreen(
     navController: NavHostController,
-    launcher: ActivityResultLauncher<IntentSenderRequest>,
-    oneTapClient: SignInClient
+    authViewModel: AuthViewModel = koinViewModel(),
+    onSignInSuccess: (FirebaseUser?) -> Unit
 ) {
 
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    val signInState by authViewModel.signInState.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
 
@@ -64,6 +63,8 @@ fun LoginScreen(
     val scope = rememberCoroutineScope()
 
     var isLoading by remember { mutableStateOf(false) }
+
+
 
     Scaffold { innerPadding ->
         Column(
@@ -89,25 +90,21 @@ fun LoginScreen(
                 text = stringResource(R.string.login),
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(20.dp)
+                modifier = Modifier
+                    .padding(20.dp)
+                    .align(Alignment.CenterHorizontally)
             )
 
 
             OutlinedButton(
                 onClick = {
+                    AnalyticsHelper.logEvent(
+                        name = "LoginScreen_Google_Click",
+                        params = mapOf("Login Click" to "Initiate")
+                    )
                     isLoading = true
-                    scope.launch {
-                        val signInRequest = GoogleSignInHelper.buildGoogleIdOption()
-                        oneTapClient.beginSignIn(signInRequest)
-                            .addOnSuccessListener { result ->
-                                launcher.launch(IntentSenderRequest.Builder(result.pendingIntent.intentSender).build())
-                            }
-                            .addOnFailureListener { e ->
-                                Log.e("GoogleSignIn", "Failed: ${e.localizedMessage}")
-                            }
+                    authViewModel.launchGoogleSignIn()
 
-
-                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -127,9 +124,46 @@ fun LoginScreen(
                 }
             }
 
-            if (isLoading){
+            when (signInState) {
+                is SignInState.Error -> {
+                    val errorMessage = (signInState as SignInState.Error).message
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text("Sign-in Error: $errorMessage")
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
+
+                SignInState.Idle -> {
+
+                }
+
+                SignInState.Loading -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
+
+                is SignInState.Success -> {
+                    val user = (signInState as SignInState.Success).user
+                    // Trigger the success callback
+                    LaunchedEffect(user) {
+                        onSignInSuccess(user)
+                    }
+                    if (user?.uid != null) {
+                        navController.navigate(Screens.Home.route)
+                    }
+                }
+            }
+
+            if (isLoading) {
                 CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.CenterHorizontally).padding(10.dp)
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(10.dp)
                 )
             }
 
@@ -141,6 +175,10 @@ fun LoginScreen(
 @Preview(showSystemUi = true)
 @Composable
 fun LoginScreenPreview() {
+    LoginScreen(
+        navController = rememberNavController(),
+        onSignInSuccess = { Unit }
+    )
     CircularProgressIndicator()
-   // LoginScreen(rememberNavController(), launcher = ActivityResultLauncher<IntentSenderRequest>, oneTapClient = SignInClient.create())
+    // LoginScreen(rememberNavController(), launcher = ActivityResultLauncher<IntentSenderRequest>, oneTapClient = SignInClient.create())
 }

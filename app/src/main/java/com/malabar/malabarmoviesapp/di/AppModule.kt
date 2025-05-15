@@ -1,6 +1,8 @@
 package com.malabar.malabarmoviesapp.di
 
 import android.app.Activity
+import android.content.Context
+import androidx.credentials.CredentialManager
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.google.firebase.auth.FirebaseAuth
@@ -149,16 +151,6 @@ val networkModule = module {
     single { provideMovieApi(retrofit = get()) }
 }
 
-val authModule = module {
-    single { FirebaseAuth.getInstance() }
-
-    single<AuthRepository> { AuthRepositoryImpl(get()) }
-
-    factory { SignInWithGoogleUseCase(get()) }
-
-    viewModel { AuthViewModel(get()) }
-}
-
 val repositoryModule = module {
     single {
         Gson()
@@ -239,8 +231,13 @@ val interactorModule = module {
     }
 }
 
+val authModule = module {
+    single { FirebaseAuth.getInstance() }
+    single { CredentialManager.create(get<Context>()) }
+    viewModel { AuthViewModel(get(), get(), get()) }
+}
+
 val viewModelModule = module {
-    viewModelOf(::AuthViewModel)
     viewModelOf(::MovieViewModel)
     viewModelOf(::MovieDetailsViewModel)
     viewModelOf(::MovieSearchViewModel)

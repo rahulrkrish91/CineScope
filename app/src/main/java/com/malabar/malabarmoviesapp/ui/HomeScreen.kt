@@ -21,6 +21,7 @@ import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
+import com.malabar.core.AnalyticsHelper
 import com.malabar.core.AppConstants.Companion.GOOGLE_PUB_SUB
 import com.malabar.core.AppConstants.Companion.MOVIE_DEFAULT_LANG
 import com.malabar.core.AppConstants.Companion.MOVIE_DEFAULT_REGION
@@ -73,6 +74,10 @@ fun HomeScreen(
                 }
 
                 is Failure.ServerError -> {
+                    AnalyticsHelper.logEvent(
+                        name = "HomeScreen",
+                        params = mapOf("Fetch Api Key from Firebase DB" to it.throwable)
+                    )
                     Toast.makeText(context, "Error ${it.throwable}", Toast.LENGTH_LONG).show()
                 }
             }

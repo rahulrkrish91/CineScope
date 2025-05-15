@@ -17,14 +17,22 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.credentials.ClearCredentialRequestTypes
+import androidx.credentials.ClearCredentialStateRequest
+import androidx.credentials.CredentialManager
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
 import com.malabar.malabarmoviesapp.navigation.Screens
+import com.malabar.malabarmoviesapp.ui.security.AuthViewModel
+import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun ProfileScreen(navController: NavController) {
+fun ProfileScreen(navController: NavController, authViewModel: AuthViewModel = koinViewModel()) {
 
     var auth: FirebaseAuth = FirebaseAuth.getInstance()
     var user = auth.currentUser
@@ -55,6 +63,9 @@ fun ProfileScreen(navController: NavController) {
             OutlinedButton(
                 onClick = {
                     auth.signOut()
+                    authViewModel.signOut()
+                    navController.navigate(Screens.Login.route)
+                    /*auth.signOut()
                     val activity = context as? Activity
                     if (activity != null) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -62,7 +73,7 @@ fun ProfileScreen(navController: NavController) {
                         } else {
                             activity.finishAndRemoveTask()
                         }
-                    }
+                    }*/
                     //navController.navigate(Screens.Login.route)
                 },
             ) {
