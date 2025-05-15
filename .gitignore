@@ -27,6 +27,7 @@ local.properties
 *.ipr
 *.iws
 .app/
+.app/release/app-release
 
 # Keystore files (DO NOT commit these!)
 *.jks

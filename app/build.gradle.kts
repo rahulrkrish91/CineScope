@@ -18,8 +18,8 @@ android {
         applicationId = "com.malabar.malabarmoviesapp"
         minSdk = 24
         targetSdk = 35
-        versionCode = 11
-        versionName = "05.12.2025"
+        versionCode = 12
+        versionName = "05.15.2025"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
